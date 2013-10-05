@@ -229,7 +229,7 @@ get '/memo/:id' => [qw(session get_user)] => sub {
 
     my $user = $c->stash->{user};
     my $memo = $self->dbh->select_row(
-        'SELECT id, user, content, is_private, created_at, updated_at FROM memos WHERE id=?',
+        'SELECT id, user, content, is_private, created_at FROM memos WHERE id=?',
         $c->args->{id},
     );
     unless ($memo) {
