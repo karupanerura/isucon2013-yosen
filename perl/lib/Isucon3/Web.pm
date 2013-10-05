@@ -31,7 +31,7 @@ sub cache {
     state $cache = do {
         my $msgpack = Data::MessagePack->new->utf8(1);
         Cache::Memcached::Fast->new({
-            servers            => [],
+            servers            => ['127.0.0.1:11211'],
             utf8               => 1,
             hash_namespace     => 1,
             ketama_points      => 150,
