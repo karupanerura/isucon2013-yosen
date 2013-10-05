@@ -7,8 +7,8 @@ ALTER TABLE memos_new
     ADD INDEX is_private_created_at (is_private, created_at),
     ADD INDEX user_created_at (user, created_at);
 INSERT INTO memos_new
-    (id, user, username, content, is_private, created_at, updated_at)
-    SELECT memos.id, memos.user, users.username, memos.content, memos.is_private, memos.created_at, memos.updated_at FROM memos INNER JOIN users ON memos.user = users.id;
+    (id, user, username, content, is_private, created_at)
+    SELECT memos.id, memos.user, users.username, memos.content, memos.is_private, memos.created_at FROM memos INNER JOIN users ON memos.user = users.id;
 RENAME TABLE memos TO memos_old, memos_new TO memos;
 DROP TABLE memos_old;
 
