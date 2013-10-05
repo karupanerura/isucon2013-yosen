@@ -1,6 +1,4 @@
 #!/bin/bash
-set -e
-
 exec >> ~/restart.log
 exec 2>&1
 
