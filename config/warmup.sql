@@ -1,9 +1,9 @@
 CREATE TABLE bh LIKE memos;
-ALTER TABLE bh ENGIN=Blackhole;
+ALTER TABLE bh ENGINE=Blackhole;
 INSERT INTO bh SELECT * FROM memos;
 DROP TABLE bh;
 
 CREATE TABLE bh LIKE users;
-ALTER TABLE bh ENGIN=Blackhole;
+ALTER TABLE bh ENGINE=Blackhole;
 INSERT INTO bh SELECT * FROM users;
 DROP TABLE bh;
