@@ -17,7 +17,6 @@ use Encode;
 use Time::Piece;
 use Text::Markdown::Hoedown;
 use Cache::Memcached::Fast;
-use Parallel::Async;
 
 sub load_config {
     state $config = do {
@@ -139,25 +138,13 @@ get '/' => [qw(session get_user)] => sub {
     });
 };
 
-sub fetch_recent_memos {
-    my ($self, $page) = @_;
-
-    my $key      = "fetch_recent_memos[$page]";
-    my $memo_ids = $self->cache->get($key);
-    unless ($memo_ids) {
-        my $sql = sprintf "SELECT id FROM memos WHERE is_private=0 ORDER BY created_at DESC LIMIT 100 OFFSET %d", $page * 100;
-        $memo_ids = $self->dbh->selectcol_arrayref($sql);
-        $self->cache->set($key => $memo_ids);
-    }
-
-    return $self->dbh->select_all('SELECT id, content, username, created_at FROM memos WHERE id IN (?)', $memo_ids);
-}
-
 get '/recent/:page' => [qw(session get_user)] => sub {
     my ($self, $c) = @_;
     my $page  = int $c->args->{page};
     my $total = $self->public_total_memo();
-    my $memos = $self->fetch_recent_memos($page);
+    my $memos = $self->dbh->select_all(
+        sprintf("SELECT id, content, username, created_at FROM memos WHERE is_private=0 ORDER BY created_at DESC LIMIT 100 OFFSET %d", $page * 100)
+    );
     if ( @$memos == 0 ) {
         return $c->halt(404);
     }
@@ -263,12 +250,6 @@ post '/memo' => [qw(session get_user require_user anti_csrf)] => sub {
             );
         }
         $txn->commit;
-    }
-
-    my $total = $self->public_total_memo();
-    for my $page (0 .. int($total / 100) + 1) {
-        $self->cache->delete("fetch_recent_memos[$page]");
-        async { $self->fetch_recent_memos(@_) }->run($page);
     }
     $c->redirect('/memo/' . $memo_id);
 };
