@@ -220,10 +220,10 @@ post '/signin' => [qw(session)] => sub {
         my $session = $c->req->env->{"psgix.session"};
         $session->{user_id} = $user->{id};
         $session->{token}   = sha256_hex(rand());
-        $self->dbh->query(
-            'UPDATE users SET last_access=now() WHERE id=?',
-            $user->{id},
-        );
+        # $self->dbh->query(
+        #     'UPDATE users SET last_access=now() WHERE id=?',
+        #     $user->{id},
+        # );
         return $c->redirect('/mypage');
     }
     else {
