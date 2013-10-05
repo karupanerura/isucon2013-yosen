@@ -16,4 +16,4 @@ DROP TABLE IF EXISTS `public_total_memo`;
 CREATE TABLE `public_total_memo` (
   `count` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-UPDATE public_total_memo SET count = (SELECT count(*) FROM memos WHERE is_private = 0);
+INSERT INTO public_total_memo (count) VALUES ( (SELECT count(*) FROM memos WHERE is_private = 0) );
