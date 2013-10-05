@@ -231,6 +231,7 @@ get '/mypage' => [qw(session get_user require_user)] => sub {
 post '/memo' => [qw(session get_user require_user anti_csrf)] => sub {
     my ($self, $c) = @_;
 
+    my $memo_id;
     my $is_private = scalar($c->req->param('is_private')) ? 1 : 0;
     {
         my $txn = $self->dbh->txn_scope;
@@ -242,6 +243,7 @@ post '/memo' => [qw(session get_user require_user anti_csrf)] => sub {
             $is_private,
         );
 
+        $memo_id = $self->dbh->last_insert_id;
         if (!$is_private) {
             $self->dbh->query(
                 'UPDATE public_total_memo SET count = count + 1'
@@ -249,8 +251,6 @@ post '/memo' => [qw(session get_user require_user anti_csrf)] => sub {
         }
         $txn->commit;
     }
-    my $memo_id = $self->dbh->last_insert_id;
-
     $c->redirect('/memo/' . $memo_id);
 };
 
