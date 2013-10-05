@@ -5,6 +5,9 @@ requires "Digest::SHA";
 requires "File::Temp";
 requires "Time::Piece";
 requires "Text::Markdown::Hoedown";
+requires "Path::Class";
+requires "Data::MessagePack";
+requires "Compress::LZ4";
 
 requires "DBD::mysql";
 requires "Starlet";

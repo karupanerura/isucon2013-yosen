@@ -3,26 +3,50 @@ package Isucon3::Web;
 use strict;
 use warnings;
 use utf8;
+use feature qw/state/;
 use Kossy;
 use DBIx::Sunny;
 use JSON qw/ decode_json /;
 use Digest::SHA qw/ sha256_hex /;
+use Data::MessagePack;
+use Compress::LZ4 ();
 use DBIx::Sunny;
-use File::Temp qw/ tempfile /;
+use Path::Class;
 use IO::Handle;
 use Encode;
 use Time::Piece;
 use Text::Markdown::Hoedown;
+use Cache::Memcached::Fast;
 
 sub load_config {
-    my $self = shift;
-    $self->{_config} ||= do {
-        my $env = $ENV{ISUCON_ENV} || 'local';
-        open(my $fh, '<', $self->root_dir . "/../config/${env}.json") or die $!;
-        my $json = do { local $/; <$fh> };
-        close($fh);
+    state $config = do {
+        my $env  = $ENV{ISUCON_ENV} || 'local';
+        my $json = file(__FILE__)->dir->parent->parent->parent->subdir('config')->file("${env}.json")->slurp;
         decode_json($json);
     };
+    return $config;
+}
+
+sub cache {
+    state $cache = do {
+        my $msgpack = Data::MessagePack->new->utf8(1);
+        Cache::Memcached::Fast->new({
+            servers            => [],
+            utf8               => 1,
+            hash_namespace     => 1,
+            ketama_points      => 150,
+            compress_threshold => 5_000,
+            compress_methods => [
+                sub { ${$_[1]} = Compress::LZ4::compress(${$_[0]})   },
+                sub { ${$_[1]} = Compress::LZ4::decompress(${$_[0]}) },
+            ],
+            serialize_methods => [
+                sub { $msgpack->pack($_[0])   },
+                sub { $msgpack->unpack($_[0]) },
+            ],
+        });
+    };
+    return $cache;
 }
 
 sub dbh {

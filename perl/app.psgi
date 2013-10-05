@@ -10,6 +10,7 @@ use Cache::Memcached::Fast;
 
 my $root_dir = File::Basename::dirname(__FILE__);
 
+Isucon3::Web->load_config; ## preload
 my $app = Isucon3::Web->psgi($root_dir);
 builder {
     enable 'ReverseProxy';
@@ -18,9 +19,7 @@ builder {
         root => $root_dir . '/public';
     enable 'Session',
         store => Plack::Session::Store::Cache->new(
-            cache => Cache::Memcached::Fast->new({
-                servers => [ "localhost:11211" ],
-            }),
+            cache => Isucon3::Web->cache,
         ),
         state => Plack::Session::State::Cookie->new(
             httponly    => 1,
