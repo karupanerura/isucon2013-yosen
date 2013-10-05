@@ -101,12 +101,17 @@ filter 'anti_csrf' => sub {
     };
 };
 
+sub public_total_memo {
+    my $self = shift;
+    return $self->dbh->select_one(
+        'SELECT count FROM public_total_memo'
+    );
+}
+
 get '/' => [qw(session get_user)] => sub {
     my ($self, $c) = @_;
 
-    my $total = $self->dbh->select_one(
-        'SELECT count(*) FROM memos WHERE is_private=0'
-    );
+    my $total = $self->public_total_memo();
     my $memos = $self->dbh->select_all(
         'SELECT id, content, username, created_at FROM memos WHERE is_private=0 ORDER BY created_at DESC LIMIT 100',
     );
@@ -121,9 +126,7 @@ get '/' => [qw(session get_user)] => sub {
 get '/recent/:page' => [qw(session get_user)] => sub {
     my ($self, $c) = @_;
     my $page  = int $c->args->{page};
-    my $total = $self->dbh->select_one(
-        'SELECT count(*) FROM memos WHERE is_private=0'
-    );
+    my $total = $self->public_total_memo();
     my $memos = $self->dbh->select_all(
         sprintf("SELECT id, content, username, created_at FROM memos WHERE is_private=0 ORDER BY created_at DESC LIMIT 100 OFFSET %d", $page * 100)
     );
@@ -213,14 +216,26 @@ get '/mypage' => [qw(session get_user require_user)] => sub {
 post '/memo' => [qw(session get_user require_user anti_csrf)] => sub {
     my ($self, $c) = @_;
 
-    $self->dbh->query(
-        'INSERT INTO memos (user, username, content, is_private, created_at) VALUES (?, ?, ?, ?, now())',
-        $c->stash->{user}->{id},
-        $c->stash->{user}->{username},
-        scalar $c->req->param('content'),
-        scalar($c->req->param('is_private')) ? 1 : 0,
-    );
+    my $is_private = scalar($c->req->param('is_private')) ? 1 : 0;
+    {
+        my $txn = $self->dbh->txn_scope;
+        $self->dbh->query(
+            'INSERT INTO memos (user, username, content, is_private, created_at) VALUES (?, ?, ?, ?, now())',
+            $c->stash->{user}->{id},
+            $c->stash->{user}->{username},
+            scalar $c->req->param('content'),
+            $is_private,
+        );
+
+        if (!$is_private) {
+            $self->dbh->query(
+                'UPDATE public_total_memo SET count = count + 1'
+            );
+        }
+        $txn->commit;
+    }
     my $memo_id = $self->dbh->last_insert_id;
+
     $c->redirect('/memo/' . $memo_id);
 };
 
