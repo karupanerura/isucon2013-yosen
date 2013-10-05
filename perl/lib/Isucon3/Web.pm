@@ -241,10 +241,6 @@ get '/memo/:id' => [qw(session get_user)] => sub {
         }
     }
     $memo->{content_html} = markdown($memo->{content});
-    $memo->{username} = $self->dbh->select_one(
-        'SELECT username FROM users WHERE id=?',
-        $memo->{user},
-    );
 
     my $cond;
     if ($user && $user->{id} == $memo->{user}) {
