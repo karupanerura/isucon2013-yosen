@@ -2,4 +2,4 @@
 set -e
 set -x
 
-cat ~/webapp/config/alter.sql | mysql -uisucon isucon
+cat /home/isucon/webapp/config/alter.sql | mysql -uisucon isucon
