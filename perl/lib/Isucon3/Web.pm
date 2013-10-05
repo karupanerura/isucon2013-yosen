@@ -108,7 +108,7 @@ get '/' => [qw(session get_user)] => sub {
         'SELECT count(*) FROM memos WHERE is_private=0'
     );
     my $memos = $self->dbh->select_all(
-        'SELECT id, content, username, created_at FROM memos WHERE is_private=0 ORDER BY created_at DESC, id DESC LIMIT 100',
+        'SELECT id, content, username, created_at FROM memos WHERE is_private=0 ORDER BY created_at DESC LIMIT 100',
     );
 
     $c->render('index.tx', {
@@ -125,7 +125,7 @@ get '/recent/:page' => [qw(session get_user)] => sub {
         'SELECT count(*) FROM memos WHERE is_private=0'
     );
     my $memos = $self->dbh->select_all(
-        sprintf("SELECT id, content, username, created_at FROM memos WHERE is_private=0 ORDER BY created_at DESC, id DESC LIMIT 100 OFFSET %d", $page * 100)
+        sprintf("SELECT id, content, username, created_at FROM memos WHERE is_private=0 ORDER BY created_at DESC LIMIT 100 OFFSET %d", $page * 100)
     );
     if ( @$memos == 0 ) {
         return $c->halt(404);
