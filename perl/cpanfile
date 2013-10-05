@@ -8,6 +8,7 @@ requires "Text::Markdown::Hoedown";
 requires "Path::Class";
 requires "Data::MessagePack";
 requires "Compress::LZ4";
+requires "Parallel::Async";
 
 requires "DBD::mysql";
 requires "Starlet";
