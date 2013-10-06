@@ -1,0 +1,8 @@
+/Users/karupanerura/project/Isucon/perl/local/lib/perl5/Data/Validator.pm
+/Users/karupanerura/project/Isucon/perl/local/lib/perl5/Data/Validator/Role/AllowExtra.pm
+/Users/karupanerura/project/Isucon/perl/local/lib/perl5/Data/Validator/Role/Croak.pm
+/Users/karupanerura/project/Isucon/perl/local/lib/perl5/Data/Validator/Role/Method.pm
+/Users/karupanerura/project/Isucon/perl/local/lib/perl5/Data/Validator/Role/NoRestricted.pm
+/Users/karupanerura/project/Isucon/perl/local/lib/perl5/Data/Validator/Role/NoThrow.pm
+/Users/karupanerura/project/Isucon/perl/local/lib/perl5/Data/Validator/Role/Sequenced.pm
+/Users/karupanerura/project/Isucon/perl/local/lib/perl5/Data/Validator/Role/StrictSequenced.pm

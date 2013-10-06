@@ -1,0 +1,1 @@
+{"pathname":"K/KA/KARUPA/Parallel-Async-0.02.tar.gz","provides":{"Parallel::Async::Chain":{"file":"lib/Parallel/Async/Chain.pm"},"Parallel::Async":{"version":"0.02","file":"lib/Parallel/Async.pm"},"Parallel::Async::Task":{"file":"lib/Parallel/Async/Task.pm"}},"dist":"Parallel-Async-0.02","version":"0.02","target":"Parallel::Async","name":"Parallel::Async"}

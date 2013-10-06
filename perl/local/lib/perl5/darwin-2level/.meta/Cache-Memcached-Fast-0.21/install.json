@@ -1,0 +1,1 @@
+{"pathname":"K/KR/KROKI/Cache-Memcached-Fast-0.21.tar.gz","dist":"Cache-Memcached-Fast-0.21","version":"0.21","target":"Cache::Memcached::Fast","name":"Cache::Memcached::Fast","provides":{"Cache::Memcached::Fast":{"file":"lib/Cache/Memcached/Fast.pm","version":"0.21"}}}
